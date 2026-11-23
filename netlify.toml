@@ -1,0 +1,6 @@
+# Plain static site: a single HTML page, with no framework, package manager or dependencies.
+# The page is committed as "index (5).html", so the build copies it to index.html
+# so that it's served at the site root ("/").
+[build]
+  command = "cp 'index (5).html' index.html"
+  publish = "."
