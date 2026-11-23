@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tesla Concept — Shop + Invest Demo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body{font-family:Inter,system-ui,sans-serif}.dark{background:#0f0f10;color:#fff}.dark .card{background:#1c1c1e}.card{background:#fff;border-radius:24px;box-shadow:0 4px 24px rgba(0,0,0,.06)}.pill{border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600}.active-pill{background:#111;color:#fff}.dark .active-pill{background:#fff;color:#111}.hide{display:none}</style>
+</head><body class="bg-[#f6f6f6]">
+<div class="max-w-[430px] mx-auto min-h-screen bg-white dark:bg-[#0f0f10] relative pb-24" id="app">
+<!-- DEMO BANNER -->
+<div class="bg-yellow-400 text-black text-[11px] font-bold px-3 py-2 text-center sticky top-0 z-50">UNOFFICIAL CONCEPT DEMO — Not affiliated with or endorsed by Tesla, Inc. Demo site. Don't send money or enter real personal details.</div>
+<!-- TOP BAR -->
+<div class="flex items-center justify-between px-4 py-3"><div class="font-black tracking-widest text-lg">TESLA <span class="font-light">CONCEPT</span></div><div class="flex gap-2"><button onclick="toggleDark()" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">🌙</button><button onclick="openMenu()" class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center font-bold">J</button></div></div>
+
+<!-- NAV TABS -->
+<div class="flex gap-2 px-4"><button onclick="show('invest')" id="tab-invest" class="pill active-pill">Invest</button><button onclick="show('shop')" id="tab-shop" class="pill bg-gray-100">Shop</button><button onclick="show('orders')" id="tab-orders" class="pill bg-gray-100">Orders (1)</button><button onclick="show('dev')" id="tab-dev" class="pill bg-gray-100">GitHub / Dev</button></div>
+
+<!-- INVEST -->
+<div id="view-invest" class="px-4 mt-4">
+<h1 class="text-2xl font-bold">Good morning, John</h1><p class="text-gray-500 text-sm">Here's where everything stands today • <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-bold">KYC Verified</span></p>
+<div class="flex gap-2 mt-3"><button onclick="deposit()" class="flex-1 bg-black text-white py-3 rounded-full font-bold">+ Deposit</button><button onclick="withdraw()" class="flex-1 bg-gray-100 py-3 rounded-full font-bold">Withdraw</button><button onclick="show('shop')" class="flex-1 bg-gray-100 py-3 rounded-full font-bold">Invest</button></div>
+<div class="card p-5 mt-4"><p class="text-xs text-gray-500">Available balance</p><p class="text-3xl font-black" id="balance">$3,319,399.24</p><p class="text-xs text-gray-500">Ready to invest, shop or withdraw</p><div class="grid grid-cols-3 gap-2 mt-4 text-center"><div class="bg-gray-50 dark:bg-black/20 p-2 rounded-xl"><p class="font-bold text-sm">$1,842,000</p><p class="text-[11px] text-gray-500">Invested</p></div><div class="bg-gray-50 dark:bg-black/20 p-2 rounded-xl"><p class="font-bold text-sm text-green-600">$214,380</p><p class="text-[11px] text-gray-500">Returns paid</p></div><div class="bg-gray-50 dark:bg-black/20 p-2 rounded-xl"><p class="font-bold text-sm">$412,900</p><p class="text-[11px] text-gray-500">Expected</p></div></div></div>
+<div class="card p-5 mt-4"><h3 class="font-bold">Returns Calculator</h3><p class="text-xs text-gray-500">Educational demo only. Not financial advice.</p><label class="text-xs font-bold mt-3 block">Amount $<span id="calcAmtLabel">10000</span></label><input type="range" min="1000" max="500000" step="1000" value="10000" class="w-full" oninput="calc(this.value)"><p class="mt-2 text-sm">Projected (12% demo) in 12 mo: <b id="calcOut">$11,200</b></p></div>
+<h3 class="font-bold mt-5">Projects to back</h3><div id="projects"></div>
+<h3 class="font-bold mt-5">From the shop</h3><div id="investShop" class="flex gap-3 overflow-x-auto pb-2"></div>
+<p class="text-[11px] text-gray-500 mt-4">Educational overview only. Verify filings before any decision. TSLA and SPCX are separate public companies. Tesla owns &lt;1% of SpaceX.</p>
+</div>
+
+<!-- SHOP -->
+<div id="view-shop" class="px-4 mt-4 hide">
+<h2 class="text-2xl font-bold">Shop</h2><p class="text-gray-500 text-sm">Vehicles, energy and technology from the ecosystem.</p>
+<input id="search" oninput="renderShop()" placeholder="Search products — try Solar, Optimus, Model Y" class="w-full mt-3 px-4 py-3 rounded-full bg-gray-100 outline-none">
+<div class="flex gap-2 overflow-x-auto mt-3" id="filters"></div>
+<div id="shopGrid" class="mt-4 space-y-4"></div>
+<div class="card p-4 mt-4"><h3 class="font-bold">How it works</h3><ol class="text-sm text-gray-600 mt-2 space-y-1"><li>1. Choose — Pay in full, or spread with financing</li><li>2. Pay your way — Demo checkout only</li><li>3. We confirm it — Usually within a day (demo)</li><li>4. Delivered — Follow every step</li></ol></div>
+</div>
+
+<!-- ORDERS / CART -->
+<div id="view-orders" class="px-4 mt-4 hide">
+<h2 class="text-2xl font-bold">Cart & Orders</h2>
+<div id="cartBox" class="card p-4 mt-3"></div>
+<div class="card p-4 mt-3"><p class="font-bold">Order DEMO-001 — Model Y</p><p class="text-sm text-gray-500">Confirmed • Delivery timeline</p><div class="flex gap-1 mt-2"><div class="h-2 flex-1 bg-black rounded-full"></div><div class="h-2 flex-1 bg-black rounded-full"></div><div class="h-2 flex-1 bg-gray-200 rounded-full"></div><div class="h-2 flex-1 bg-gray-200 rounded-full"></div></div><p class="text-xs mt-1">Ordered → Confirmed → In Production → Delivered</p></div>
+<button onclick="checkout()" class="w-full bg-black text-white py-3 rounded-full font-bold mt-4">Checkout (Demo)</button>
+</div>
+
+<!-- DEV / GITHUB -->
+<div id="view-dev" class="px-4 mt-4 hide">
+<h2 class="text-2xl font-bold">GitHub + Netlify</h2><p class="text-sm text-gray-500 mt-1">You are here: This repo is ready to upload.</p>
+<div class="card p-4 mt-3"><h3 class="font-bold">Files in this repo</h3><p class="text-sm font-mono mt-2">index.html<br>netlify.toml<br>README.md<br>GITHUB-GUIDE.md</p></div>
+<div class="card p-4 mt-3"><h3 class="font-bold">Supabase Schema (Concept)</h3><pre class="text-[11px] bg-gray-100 p-3 rounded-xl overflow-x-auto mt-2">create table products (
+ id uuid primary key default gen_random_uuid(),
+ name text, category text, description text,
+ price numeric, monthly_price numeric,
+ image_url text, badge text,
+ created_at timestamptz default now()
+);
+create table orders (id uuid primary key, user_id uuid, total numeric, status text, created_at timestamptz default now());
+create table cart_items (id uuid primary key, user_id uuid, product_id uuid references products(id), qty int);
+create table investments (id uuid primary key, user_id uuid, project text, amount numeric, expected_return numeric, created_at timestamptz default now());</pre></div>
+<div class="card p-4 mt-3"><h3 class="font-bold">Netlify Settings</h3><p class="text-sm mt-1">Build command: <b>(leave blank)</b><br>Publish directory: <b>.</b> (root)</p></div>
+</div>
+
+<!-- MENU MODAL -->
+<div id="menu" class="fixed inset-0 bg-black/50 z-50 hide" onclick="if(event.target==this)closeMenu()"><div class="absolute right-0 top-0 h-full w-[85%] max-w-[360px] bg-white dark:bg-[#1c1c1e] p-5 overflow-y-auto"><div class="flex justify-between"><div><p class="font-bold text-lg">John Doe <span class="bg-black text-white text-[10px] px-2 py-1 rounded-full">VIP</span></p><p class="text-xs text-gray-500">Member ID 3715304162 <button onclick="copyId()" class="underline">Copy</button></p></div><button onclick="closeMenu()">✕</button></div><div class="mt-5 space-y-2"><p class="text-xs font-bold text-gray-400">OVERVIEW</p><button onclick="show('invest');closeMenu()" class="w-full text-left p-3 bg-gray-50 rounded-xl">Wallet</button><button onclick="show('orders');closeMenu()" class="w-full text-left p-3 bg-gray-50 rounded-xl">Transactions</button><p class="text-xs font-bold text-gray-400 pt-2">SHOP</p><button onclick="show('shop');closeMenu()" class="w-full text-left p-3 bg-gray-50 rounded-xl">Shop</button><button onclick="show('orders');closeMenu()" class="w-full text-left p-3 bg-gray-50 rounded-xl">Orders • Cart</button><p class="text-xs font-bold text-gray-400 pt-2">ACCOUNT</p><button onclick="alert('Security panel — Demo: 2FA is ON, Passkey enabled')" class="w-full text-left p-3 bg-gray-50 rounded-xl">Security</button><button onclick="show('dev');closeMenu()" class="w-full text-left p-3 bg-gray-50 rounded-xl">Developer / GitHub Guide</button></div><button onclick="toggleDark()" class="w-full mt-6 bg-black text-white py-3 rounded-full font-bold">Toggle Light / Dark</button></div></div>
+
+<!-- BOTTOM NAV -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white dark:bg-[#1c1c1e] border-t flex justify-around py-3 px-4 z-40"><button onclick="show('invest')">🏠<br><span class="text-[11px]">Home</span></button><button onclick="show('invest')">📈<br><span class="text-[11px]">Invest</span></button><button onclick="show('shop')" class="w-12 h-12 -mt-6 bg-black text-white rounded-full text-2xl">+</button><button onclick="show('shop')">🛍️<br><span class="text-[11px]">Shop</span></button><button onclick="openMenu()">☰<br><span class="text-[11px]">More</span></button></div>
+</div>
+<script>
+let balance=3319399.24, cart=[], filter='All', products=[
+{id:1,name:'Model 3',cat:'Vehicles',price:39990,mo:711,img:'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&q=80',desc:'Compact sedan, 270-363 mi range.'},
+{id:2,name:'Model Y',cat:'Vehicles',price:48000,mo:853,img:'https://images.unsplash.com/photo-1617788138017-80ad40651399?w=800&q=80',desc:'Compact SUV, 260-330 mi, best-seller.'},
+{id:3,name:'Model S Plaid',cat:'Vehicles',price:79990,mo:1422,img:'https://images.unsplash.com/photo-1617704548623-340376564e68?w=800&q=80',desc:'Luxury sedan, 368-410 mi, 1.99s 0-60.'},
+{id:4,name:'Model X',cat:'Vehicles',price:84990,mo:1511,img:'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=800&q=80',desc:'Premium SUV, falcon wing doors.'},
+{id:5,name:'Cybertruck',cat:'Vehicles',price:79990,mo:1422,img:'https://images.unsplash.com/photo-1701246847787-8a5d7d5d5d5d?w=800&q=80',desc:'Electric pickup, stainless exoskeleton.'},
+{id:6,name:'Semi',cat:'Vehicles',price:150000,mo:2667,img:'https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=800&q=80',desc:'Class 8 truck for fleets.'},
+{id:7,name:'Roadster (Next Gen)',cat:'Vehicles',price:200000,mo:3556,img:'https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800&q=80',desc:'Upcoming hypercar, reservation only.'},
+{id:8,name:'Solar Panels',cat:'Energy',price:15000,mo:267,img:'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80',desc:'Rooftop solar, app monitoring.'},
+{id:9,name:'Solar Roof',cat:'Energy',price:45000,mo:800,img:'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80',desc:'Solar glass tiles.'},
+{id:10,name:'Powerwall 3',cat:'Energy',price:11500,mo:204,img:'https://images.unsplash.com/photo-1620712943542-2c9b0d2b5b0a?w=800&q=80',desc:'13.5 kWh, 11.5 kW, built-in inverter.'},
+{id:11,name:'Megapack',cat:'Energy',price:0,mo:0,img:'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=800&q=80',desc:'Utility-scale storage, project pricing.'},
+{id:12,name:'Wall Connector',cat:'Energy',price:660,mo:12,img:'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=800&q=80',desc:'Home charging 11.5 kW.'},
+{id:13,name:'Optimus Gen 3',cat:'Robotics',price:25000,mo:444,img:'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80',desc:'Humanoid. Production Oct 2026 Fremont. Not for sale yet — Waitlist only.'},
+{id:14,name:'Full Self-Driving (Supervised)',cat:'Digital',price:8000,mo:99,img:'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80',desc:'Driver-assist, requires supervision.'},
+{id:15,name:'Premium Connectivity',cat:'Digital',price:99,mo:9,img:'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80',desc:'Maps, streaming, live traffic.'},
+];
+let projects=[{n:'TSLA — Tesla Inc.',t:'Public equity • Nasdaq: TSLA',p:68},{n:'SPCX — SpaceX',t:'Public equity • Nasdaq: SPCX • IPO June 2026',p:54},{n:'Tesla Energy Fund',t:'Solar + Powerwall ROI',p:42},{n:'Optimus Robotics Fund',t:'Robotics demo allocation',p:31}];
+function show(v){['invest','shop','orders','dev'].forEach(x=>{document.getElementById('view-'+x).classList.toggle('hide',x!==v);document.getElementById('tab-'+x).className='pill '+(x===v?'active-pill':'bg-gray-100')});window.scrollTo(0,0)}
+function toggleDark(){document.body.classList.toggle('dark');document.getElementById('app').classList.toggle('dark')}
+function openMenu(){document.getElementById('menu').classList.remove('hide')}function closeMenu(){document.getElementById('menu').classList.add('hide')}
+function copyId(){navigator.clipboard.writeText('3715304162');alert('Member ID copied: 3715304162')}
+function deposit(){let a=prompt('Deposit amount (demo):','1000');if(a){balance+=+a;upd()}}
+function withdraw(){let a=prompt('Withdraw amount (demo):','500');if(a&&+a<=balance){balance-=+a;upd()}else alert('Insufficient demo balance')}
+function upd(){document.getElementById('balance').textContent='$'+balance.toLocaleString('en-US',{minimumFractionDigits:2});renderCart()}
+function calc(v){document.getElementById('calcAmtLabel').textContent=v;document.getElementById('calcOut').textContent='$'+(v*1.12).toLocaleString()}
+function renderProjects(){document.getElementById('projects').innerHTML=projects.map(p=>`<div class="card p-4 mt-3"><div class="flex justify-between"><b>${p.n}</b><span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${p.p}% funded</span></div><p class="text-xs text-gray-500">${p.t}</p><div class="h-2 bg-gray-100 rounded-full mt-2"><div class="h-2 bg-black rounded-full" style="width:${p.p}%"></div></div><button onclick="alert('Demo invest — This is educational only. No real investment placed.')" class="w-full mt-3 bg-black text-white py-2 rounded-full text-sm font-bold">Back Project (Demo)</button></div>`).join('')}
+function renderShop(){let q=(document.getElementById('search').value||'').toLowerCase();let cats=['All','Vehicles','Energy','Robotics','Digital','Lifestyle'];document.getElementById('filters').innerHTML=cats.map(c=>`<button onclick="setFilter('${c}')" class="pill whitespace-nowrap ${filter===c?'active-pill':'bg-gray-100'}">${c}</button>`).join('');let list=products.filter(p=>(filter==='All'||p.cat===filter)&&p.name.toLowerCase().includes(q));document.getElementById('shopGrid').innerHTML=list.map(p=>`<div class="card overflow-hidden"><img src="${p.img}" onerror="this.src='https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&q=80'" class="w-full h-48 object-cover"><div class="p-4"><span class="text-[11px] bg-gray-100 px-2 py-1 rounded-full">${p.cat}</span><h3 class="font-bold text-lg mt-1">${p.name}</h3><p class="text-sm text-gray-500">${p.desc}</p><p class="font-black mt-1">${p.price?('$'+p.price.toLocaleString()+' • $'+p.mo+'/mo'):'Contact for pricing'}</p><p class="text-[10px] text-gray-400">Generic placeholder photo for concept demo.</p><div class="flex gap-2 mt-3"><button onclick="addCart(${p.id})" class="flex-1 bg-black text-white py-2 rounded-full font-bold text-sm">Add to Cart</button><button onclick="alert('${p.name} — Specs: See product detail in full app. Demo listing.')" class="flex-1 bg-gray-100 py-2 rounded-full font-bold text-sm">View →</button></div></div></div>`).join('')||'<p class="text-gray-500">No matches — try Solar or Optimus</p>';document.getElementById('investShop').innerHTML=products.slice(0,4).map(p=>`<div class="card min-w-[180px] p-3"><img src="${p.img}" class="w-full h-20 object-cover rounded-xl"><p class="font-bold text-sm mt-2">${p.name}</p><p class="text-xs">$${p.price.toLocaleString()}</p><button onclick="addCart(${p.id})" class="w-full bg-black text-white py-1.5 rounded-full text-xs mt-2">Add</button></div>`).join('')}
+function setFilter(c){filter=c;renderShop()}
+function addCart(id){let p=products.find(x=>x.id===id);if(p.name.includes('Optimus')){alert('Optimus — Join Waitlist (Demo). Not for sale yet. You are #'+(Math.floor(Math.random()*9000)+1000)+' on waitlist.');return}cart.push(p);renderCart();alert(p.name+' added to cart (Demo)')}
+function renderCart(){document.getElementById('cartBox').innerHTML=cart.length?cart.map((p,i)=>`<div class="flex justify-between py-1 text-sm"><span>${p.name}</span><b>$${p.price.toLocaleString()}</b></div>`).join('')+`<hr class="my-2"><div class="flex justify-between font-bold"><span>Total (Demo)</span><span>$${cart.reduce((a,b)=>a+b.price,0).toLocaleString()}</span></div>`:'<p class="text-gray-500 text-sm">Nothing in it yet. Add products from Shop.</p><p class="text-xs text-gray-400">Your cart — Demo only</p>'}
+function checkout(){if(!cart.length){alert('Cart is empty — add a product first (Demo)');return}alert('Demo Checkout Complete! Order DEMO-'+Math.floor(Math.random()*9000+1000)+' created. No real payment taken.');cart=[];renderCart()}
+renderProjects();renderShop();renderCart();
+</script></body></html>
